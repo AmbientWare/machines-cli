@@ -1,6 +1,6 @@
 # LazyCloud CLI Overview
 
-The LazyCloud CLI (`lazycloud`) is a command-line tool for managing your cloud machines and resources. This guide will help you get started with the CLI.
+The LazyCloud CLI (`lazycloud`) is a command-line tool for managing your cloud machines and resources.
 
 ## Installation
 
@@ -15,12 +15,13 @@ pip install lazycloud
 Before using the CLI, you'll need to:
 
 1. Set up your API key:
+- Copy your default API key from [lazycloud.dev/api-keys](https://lazycloud.dev/api-keys)
 ```bash
 # Add your API key
-lazycloud auth add my-key YOUR_API_KEY
+lazycloud auth add default YOUR_API_KEY
 
 # Set it as active
-lazycloud auth set my-key
+lazycloud auth set default
 ```
 
 2. Set up SSH keys for machine access:
@@ -32,33 +33,27 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 lazycloud ssh add my-ssh-key
 ```
 
-## Command Structure
+## Basic Usage
 
-The CLI is organized into the following command groups:
+Here's a simple example of creating and managing a machine:
 
-- `auth` - Manage API keys
-  - `add` - Add a new API key
-  - `ls` - List all API keys
-  - `set` - Set active API key
-  - `rm` - Remove an API key
+```bash
+# Create a new machine (interactive)
+lazycloud machines create my-machine
 
-- `machines` - Manage cloud machines
-  - `create` - Create a new machine (interactive)
-  - `ls` - List all machines
-  - `get` - Get machine details
-  - `scale` - Scale machine resources (interactive)
-  - `connect` - Connect to a machine
-  - `destroy` - Destroy a machine
+# List your machines
+lazycloud machines ls
 
-- `volumes` - Manage machine storage volumes
-  - `extend` - Extend a machine's volume
+# Connect to the machine
+lazycloud machines connect my-machine
 
-- `ssh` - Manage SSH keys
-  - `add` - Add an SSH key
-  - `ls` - List SSH keys
-  - `rm` - Remove an SSH key
+# When done, clean up
+lazycloud machines destroy my-machine
+```
 
-Each command group has its own set of subcommands. For example:
+## Getting Help
+
+The CLI provides built-in help for all commands:
 
 ```bash
 # List all available commands
@@ -71,65 +66,4 @@ lazycloud machines --help
 lazycloud machines create --help
 ```
 
-## Common Options
-
-Many commands support these common options:
-
-- `-h, --help` - Show help message
-- `--version` - Show version information
-
-## Best Practices
-
-1. Always use an active API key
-2. Keep your API keys secure and never share them
-3. Use different API keys for different environments (development, staging, production)
-4. Regularly rotate your API keys for security
-5. Use descriptive names for your resources
-6. Regularly check your resource usage
-7. Clean up unused resources
-8. Use SSH keys for secure machine access
-9. Back up important data before making major changes
-10. Validate your API keys before using them in production
-
-## Error Handling
-
-The CLI provides clear error messages when something goes wrong. Common errors include:
-
-- Invalid API key
-- Resource not found
-- Insufficient permissions
-- Invalid configuration
-- Network issues
-- SSH key validation failures
-- Volume extension failures
-
-## Examples
-
-Here's a complete workflow to get started:
-
-```bash
-# Set up your API key
-lazycloud auth add my-key YOUR_API_KEY
-lazycloud auth set my-key
-
-# Add your SSH key
-lazycloud ssh add my-ssh-key
-
-# Create a new machine (interactive)
-lazycloud machines create my-machine
-
-# List your machines
-lazycloud machines ls
-
-# Connect to the machine
-lazycloud machines connect my-machine
-
-# Extend the volume when needed
-lazycloud volumes extend my-machine 100
-
-# Scale the machine when needed (interactive)
-lazycloud machines scale my-machine
-
-# When done, clean up
-lazycloud machines destroy my-machine
-```
+For more detailed information about specific commands, refer to the individual command documentation.
