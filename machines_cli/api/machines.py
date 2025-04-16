@@ -1,6 +1,11 @@
 from typing import Dict, List, Optional, Tuple, Any
 from machines_cli.logging import logger
 from machines_cli.api.base import BaseAPI
+from pydantic import BaseModel
+from machines_cli.api.utils import mb_to_gb
+class MachineOptions(BaseModel):
+    regions: List[str]
+    options: Dict[str, List[int]]
 
 
 class MachineAPI(BaseAPI):
@@ -11,10 +16,17 @@ class MachineAPI(BaseAPI):
         """Convert GB to MB"""
         return int(gb * 1024)
 
+    def get_machine_options(self) -> MachineOptions:
+        """Get the options for a machine"""
+        res = self._get("options")
+        return MachineOptions(regions=res.get("regions", []), options=res.get("options", {}))
+
     def list_machines(self) -> List[Dict]:
         """List all machines"""
         try:
-            return self._get()
+            res = self.get_machines(with_spinner=False)
+
+            return res
 
         except Exception as e:
             logger.error(f"Error listing machines: {e}")
@@ -27,8 +39,15 @@ class MachineAPI(BaseAPI):
 
         def _get():
             if machine_name:
-                return self._get(params={"machine_name": machine_name})
-            return self._get()
+                res = self._get(params={"machine_name": machine_name})
+            else:
+                res = self._get()
+
+            for machine in res:
+                    if machine.get("memory"):
+                        machine["memory"] = mb_to_gb(machine["memory"])
+
+            return res
 
         return (
             self._run_with_spinner("Fetching machines...", _get)

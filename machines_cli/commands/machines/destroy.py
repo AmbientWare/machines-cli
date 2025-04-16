@@ -17,15 +17,16 @@ def destroy(
     """Delete a machine"""
     try:
         if not force:
+            # Use Typer's built-in rich text formatting
             confirm = typer.confirm(
-                f"Are you sure you want to delete machine {machine_name}?"
+                typer.style(f"Are you sure you want to delete machine {machine_name}?", fg=typer.colors.RED, bold=True)
             )
             if not confirm:
                 return
 
         result = api.machines.delete_machine(machine_name)
         if result:
-            logger.info(f"Successfully deleted machine {machine_name}")
+            logger.success(f"Successfully destroyed machine {machine_name}")
             # remove the machine from the ssh config
             ssh_config_manager.remove_machine(machine_name)
 

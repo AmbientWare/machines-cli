@@ -9,7 +9,9 @@ from rich.box import ROUNDED
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.live import Live
 from rich.spinner import Spinner as RichSpinner
-
+from rich.panel import Panel
+from rich.prompt import Prompt
+from rich.text import Text
 
 REMOVABLE_TABLE_NAMES = ["id", "created_at", "updated_at", "user_id", "machine_uuid"]
 
@@ -82,6 +84,41 @@ class Logger:
         """Log a debug message (only shown if verbose is True)"""
         if self.verbose:
             self._log(LogLevel.DEBUG, message, bold)
+
+    def option(
+        self,
+        prompt_text: str,
+        options: List[Any],
+        default: Any = None,
+    ) -> Any:
+        # Convert options to strings
+        str_options = [str(opt) for opt in options]
+
+        # Create a formatted string of options
+        options_text = ", ".join(str_options)
+
+        # Create a Text object for better control over wrapping
+        options_text_obj = Text(options_text)
+        options_text_obj.overflow = "fold"
+        options_text_obj.justify = "left"
+
+        # Display the prompt and options in a box that expands to terminal width
+        self.console.print(Panel(
+            options_text_obj,
+            title=prompt_text,
+            border_style="cyan",
+            expand=True  # This makes the panel expand to the full terminal width
+        ))
+
+        # Get user input with validation
+        choice = Prompt.ask(
+            "Select an option",
+            default=str(default) if default else None,
+            choices=str_options,
+            show_choices=False,
+        )
+
+        return choice
 
     def table(self, data: List[Dict[str, Any]]) -> None:
         """Log a table with enhanced styling

@@ -44,10 +44,10 @@ The CLI is organized into the following command groups:
   - `rm` - Remove an API key
 
 - `machines` - Manage cloud machines
-  - `create` - Create a new machine
+  - `create` - Create a new machine (interactive)
   - `ls` - List all machines
   - `get` - Get machine details
-  - `scale` - Scale machine resources
+  - `scale` - Scale machine resources (interactive)
   - `connect` - Connect to a machine
   - `destroy` - Destroy a machine
 
@@ -122,8 +122,8 @@ lazycloud keys set-active my-key
 # Add your SSH key
 lazycloud ssh keys add my-ssh-key
 
-# Create a new machine
-lazycloud machines create my-machine --cpu 4 --memory 8 --volume-size 50
+# Create a new machine (interactive)
+lazycloud machines create my-machine
 
 # List your machines
 lazycloud machines ls
@@ -134,8 +134,8 @@ lazycloud machines connect my-machine
 # Extend the volume when needed
 lazycloud volumes extend my-machine 100
 
-# Scale the machine when needed
-lazycloud machines scale my-machine --cpu 8 --memory 16
+# Scale the machine when needed (interactive)
+lazycloud machines scale my-machine
 
 # When done, clean up
 lazycloud machines destroy my-machine

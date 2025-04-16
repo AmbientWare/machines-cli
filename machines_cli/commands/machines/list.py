@@ -30,7 +30,7 @@ def ls(
             machines = [m for m in machines if m["type"] == type]
 
         if not machines:
-            logger.info("No machines found")
+            logger.warning("No machines found")
             return
 
         # Display the table

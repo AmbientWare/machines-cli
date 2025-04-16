@@ -1,24 +1,24 @@
 import typer
-from typing import Optional
-from click.types import Choice
+from rich.console import Console
 
 from machines_cli.api import api
 from machines_cli.logging import logger
 from machines_cli.ssh_config import ssh_config_manager
 
 app = typer.Typer(help="Create a new machine")
+console = Console()
 
 @app.command()
 def create(
     machine_name: str = typer.Argument(None, help="Name of the machine to create"),
-    region: Optional[str] = typer.Option("lax", prompt="Region to deploy the machine", help="Region to deploy the machine"),
-    cpu: Optional[int] = typer.Option(1, prompt="Number of CPUs", help="Number of CPUs"),
-    memory: Optional[int] = typer.Option(2, prompt="Memory in GB", help="Memory in GB"),
-    gpu_kind: Optional[str] = typer.Option("None", prompt="GPU kind", help="GPU kind"),
-    volume_size: Optional[int] = typer.Option(10, prompt="Volume size in GB", help="Volume size in GB"),
 ):
     """Create a new machine"""
     try:
+        # make sure the machine name is not already taken
+        if api.machines.get_machines(machine_name):
+            logger.error(f"Machine '{machine_name}' already exists. Please choose a different name.")
+            return
+
         ssh_keys = api.ssh_keys.get_ssh_keys()
         if not ssh_keys:
             logger.error(
@@ -26,14 +26,41 @@ def create(
             )
             return
 
+        machine_options = api.machines.get_machine_options()
+        if not machine_options:
+            logger.error(
+                "No machine options found. Please create a machine first with `lazycloud machines create`"
+            )
+            return
+
+        # prompt to get the region
+        regions = machine_options.regions
+        region = logger.option("Available regions:", regions, default='lax')
+
+        # prompt to get the cpu
+        cpu_options = machine_options.options.keys()
+        cpu = logger.option("Available CPU options:", [str(cpu) for cpu in cpu_options], default=1)
+
+        # prompt to get the memory
+        memory_options = machine_options.options[cpu]
+        memory = logger.option("Available RAM options (GB):", [str(memory) for memory in memory_options], default=2)
+
+        # have user input the volume size, default to 10
+        volume_size = typer.prompt(
+            "Enter the volume size in GB",
+            default=10,
+        )
+
+        # prompt to get the gpu kind
+        gpu_kind = typer.prompt(
+            "Select the GPU kind",
+            default="None",
+        )
+
         # Ask which ssh key the user wants to use
         try:
-            key_choices = Choice([key["name"] for key in ssh_keys])
-            ssh_key_name = typer.prompt(
-                "Enter the name of the SSH key you want to use",
-                type=key_choices,
-                show_choices=True,
-            )
+            key_names = [key["name"] for key in ssh_keys]
+            ssh_key_name = logger.option("Available SSH keys:", key_names, default=key_names[0] if key_names else None)
 
         except FileNotFoundError as e:
             logger.error(str(e))
@@ -45,18 +72,16 @@ def create(
 
         # Create machine using API
         try:
-            if machine_name is None:
-                raise ValueError("Machine name cannot be None")
-
             result = api.machines.create_machine(
                 name=machine_name,
                 public_key=ssh_key_name,
                 region=region,
-                cpu=cpu,
-                memory=memory,
-                volume_size=volume_size,
+                cpu=int(cpu),
+                memory=int(memory),
+                volume_size=int(volume_size),
                 gpu_kind=gpu_kind if gpu_kind != "None" else None,
             )
+
             if result:
                 created_machine = api.machines.get_machines(machine_name)
                 if created_machine:

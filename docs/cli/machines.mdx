@@ -7,24 +7,25 @@ The `machines` command group allows you to manage your cloud machines. Here are 
 Creates a new cloud machine with specified configuration.
 
 ```bash
-lazycloud machines create <name> [options]
+lazycloud machines create <name>
 ```
 
-### Options
+The command will interactively prompt you for the following configuration options:
 
-- `--region` - Region to deploy the machine (default: "lax")
-- `--cpu` - Number of CPUs (default: 1)
-- `--memory` - Memory in GB (default: 2)
-- `--gpu-kind` - GPU kind (default: "None")
-- `--volume-size` - Volume size in GB (default: 10)
+- Region to deploy the machine
+- Number of CPUs
+- Memory in GB
+- Volume size in GB
+- GPU kind
+- SSH key to use
 
 ### Example
 
 ```bash
-lazycloud machines create my-machine --cpu 4 --memory 8 --region lax --gpu-kind None --volume-size 20
+lazycloud machines create my-machine
 ```
 
-After creating a machine, you'll be prompted to select an SSH key and the machine will be automatically added to your SSH config for easier access.
+After creating a machine, the machine will be automatically added to your SSH config for easier access.
 
 ## List Machines
 
@@ -49,18 +50,15 @@ If no machine name is provided, it will show details for all machines.
 Scale an existing machine's resources.
 
 ```bash
-lazycloud machines scale <machine-name> [options]
+lazycloud machines scale <machine-name>
 ```
 
-### Options
-
-- `--cpu` - New number of CPUs
-- `--memory` - New memory in GB
+The command will interactively prompt you to select new CPU and memory values from the available options. It will show the current values and only display options that are different from the current configuration.
 
 ### Example
 
 ```bash
-lazycloud machines scale my-machine --cpu 8 --memory 16
+lazycloud machines scale my-machine
 ```
 
 ## Connect to a Machine
@@ -101,13 +99,13 @@ Here's a complete workflow example:
 
 ```bash
 # Create a new machine
-lazycloud machines create my-machine --cpu 4 --memory 8 --gpu-kind None
+lazycloud machines create my-machine
 
 # List all machines
 lazycloud machines ls
 
 # Scale the machine
-lazycloud machines scale my-machine --cpu 8 --memory 16
+lazycloud machines scale my-machine
 
 # Connect to the machine
 lazycloud machines connect my-machine
@@ -126,3 +124,4 @@ lazycloud machines destroy my-machine
 - When destroying a machine, it will be automatically removed from your SSH config
 - All commands require an active API key to be set
 - Machine names are case-sensitive
+- The scale command will only show options that are different from the current configuration
