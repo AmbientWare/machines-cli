@@ -3,7 +3,7 @@ import typer
 # Import command modules
 from machines_cli.commands.machines import machines_app
 from machines_cli.commands.ssh import ssh_app
-from machines_cli.commands.keys import keys_app
+from machines_cli.commands.auth import auth_app
 from machines_cli.commands.volumes import volumes_app
 
 # Create the main app
@@ -16,7 +16,7 @@ app = typer.Typer(
 # Add command modules to the main app
 app.add_typer(machines_app, name="machines")
 app.add_typer(ssh_app, name="ssh")
-app.add_typer(keys_app, name="keys")
+app.add_typer(auth_app, name="auth")
 app.add_typer(volumes_app, name="volumes")
 
 if __name__ == "__main__":

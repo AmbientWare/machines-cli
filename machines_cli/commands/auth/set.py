@@ -6,7 +6,7 @@ app = typer.Typer(help="Set the active API key")
 
 
 @app.command()
-def set_active(
+def set(
     name: str = typer.Argument(..., help="Name of the API key to set as active"),
 ):
     """Set the active API key"""

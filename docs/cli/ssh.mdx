@@ -1,51 +1,49 @@
 # SSH Commands
 
-The `ssh` command group allows you to manage SSH keys and configurations for your cloud machines. These commands help you set up and manage SSH access to your machines.
+The `ssh` command group allows you to manage SSH keys for your cloud machines. These commands help you set up and manage SSH access to your machines.
 
-## SSH Keys
-
-### Add SSH Key
+## Add SSH Key
 
 Add a new SSH key to your account.
 
 ```bash
-lazycloud ssh keys add <name> [options]
+lazycloud ssh add <name> [options]
 ```
 
-#### Options
+### Options
 
 - `--path` or `-p` - Path to the public key file (defaults to ~/.ssh/id_rsa.pub)
 
-#### Example
+### Example
 
 ```bash
 # Add using default key
-lazycloud ssh keys add my-key
+lazycloud ssh add my-key
 
 # Add using specific key
-lazycloud ssh keys add my-key --path ~/.ssh/custom_key.pub
+lazycloud ssh add my-key --path ~/.ssh/custom_key.pub
 ```
 
-### List SSH Keys
+## List SSH Keys
 
 List all your SSH keys.
 
 ```bash
-lazycloud ssh keys ls
+lazycloud ssh ls
 ```
 
-### Remove SSH Key
+## Remove SSH Key
 
 Remove an SSH key by name.
 
 ```bash
-lazycloud ssh keys rm <name>
+lazycloud ssh rm <name>
 ```
 
-#### Example
+### Example
 
 ```bash
-lazycloud ssh keys rm my-key
+lazycloud ssh rm my-key
 ```
 
 ## SSH Config
@@ -122,10 +120,10 @@ Here's a complete workflow example:
 
 ```bash
 # Add an SSH key
-lazycloud ssh keys add my-key
+lazycloud ssh add my-key
 
 # List SSH keys
-lazycloud ssh keys ls
+lazycloud ssh ls
 
 # Create a new machine (automatically adds to SSH config)
 lazycloud machines create my-machine
@@ -143,7 +141,7 @@ lazycloud machines connect my-machine
 lazycloud ssh remove my-machine
 
 # Remove SSH key when done
-lazycloud ssh keys rm my-key
+lazycloud ssh rm my-key
 
 # Or destroy the machine (automatically removes from SSH config)
 lazycloud machines destroy my-machine

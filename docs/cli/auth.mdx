@@ -1,19 +1,19 @@
-# Keys Commands
+# Auth Commands
 
-The `keys` command group allows you to manage your API keys for the LazyCloud CLI. Here are all the available commands:
+The `auth` command group allows you to manage your API keys for the LazyCloud CLI. Here are all the available commands:
 
 ## Add an API Key
 
 Add a new API key with a specified name and value.
 
 ```bash
-lazycloud keys add <name> <value>
+lazycloud auth add <name> <value>
 ```
 
 ### Example
 
 ```bash
-lazycloud keys add my-key YOUR_API_KEY
+lazycloud auth add my-key YOUR_API_KEY
 ```
 
 The command will:
@@ -26,7 +26,7 @@ The command will:
 List all available API keys and their status.
 
 ```bash
-lazycloud keys ls
+lazycloud auth ls
 ```
 
 The output will show:
@@ -39,7 +39,7 @@ The output will show:
 Get the value of a specific API key or the currently active key.
 
 ```bash
-lazycloud keys get [name]
+lazycloud auth get [name]
 ```
 
 If no name is provided, it will show the active API key.
@@ -48,10 +48,10 @@ If no name is provided, it will show the active API key.
 
 ```bash
 # Get active key
-lazycloud keys get
+lazycloud auth get
 
 # Get specific key
-lazycloud keys get my-key
+lazycloud auth get my-key
 ```
 
 ## Set Active API Key
@@ -59,13 +59,13 @@ lazycloud keys get my-key
 Set which API key should be used for other commands.
 
 ```bash
-lazycloud keys set-active <name>
+lazycloud auth set <name>
 ```
 
 ### Example
 
 ```bash
-lazycloud keys set-active my-key
+lazycloud auth set my-key
 ```
 
 ## Remove API Key
@@ -73,7 +73,7 @@ lazycloud keys set-active my-key
 Remove an API key by name.
 
 ```bash
-lazycloud keys rm <name> [options]
+lazycloud auth rm <name> [options]
 ```
 
 ### Options
@@ -84,10 +84,10 @@ lazycloud keys rm <name> [options]
 
 ```bash
 # Remove with confirmation
-lazycloud keys rm my-key
+lazycloud auth rm my-key
 
 # Force remove without confirmation
-lazycloud keys rm my-key --force
+lazycloud auth rm my-key --force
 ```
 
 ## Examples
@@ -96,19 +96,19 @@ Here's a complete workflow example:
 
 ```bash
 # Add a new API key
-lazycloud keys add my-key YOUR_API_KEY
+lazycloud auth add my-key YOUR_API_KEY
 
 # List all keys
-lazycloud keys ls
+lazycloud auth ls
 
 # Set this key as active
-lazycloud keys set-active my-key
+lazycloud auth set my-key
 
 # Verify the active key
-lazycloud keys get
+lazycloud auth get
 
 # When done, remove the key
-lazycloud keys rm my-key
+lazycloud auth rm my-key
 ```
 
 ## Best Practices

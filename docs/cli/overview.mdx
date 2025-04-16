@@ -17,10 +17,10 @@ Before using the CLI, you'll need to:
 1. Set up your API key:
 ```bash
 # Add your API key
-lazycloud keys add my-key YOUR_API_KEY
+lazycloud auth add my-key YOUR_API_KEY
 
 # Set it as active
-lazycloud keys set-active my-key
+lazycloud auth set my-key
 ```
 
 2. Set up SSH keys for machine access:
@@ -29,18 +29,17 @@ lazycloud keys set-active my-key
 ssh-keygen -t ed25519 -C "your_email@example.com"
 
 # Add the SSH key to your account
-lazycloud ssh keys add my-ssh-key
+lazycloud ssh add my-ssh-key
 ```
 
 ## Command Structure
 
 The CLI is organized into the following command groups:
 
-- `keys` - Manage API keys
+- `auth` - Manage API keys
   - `add` - Add a new API key
   - `ls` - List all API keys
-  - `get` - Get API key details
-  - `set-active` - Set active API key
+  - `set` - Set active API key
   - `rm` - Remove an API key
 
 - `machines` - Manage cloud machines
@@ -54,16 +53,10 @@ The CLI is organized into the following command groups:
 - `volumes` - Manage machine storage volumes
   - `extend` - Extend a machine's volume
 
-- `ssh` - Manage SSH keys and configurations
-  - `keys` - Manage SSH keys
-    - `add` - Add an SSH key
-    - `ls` - List SSH keys
-    - `rm` - Remove an SSH key
-  - `config` - Manage SSH configuration
-    - `show` - Show SSH config
-    - `clear` - Clear SSH config
-  - `add` - Add machine to SSH config
-  - `remove` - Remove machine from SSH config
+- `ssh` - Manage SSH keys
+  - `add` - Add an SSH key
+  - `ls` - List SSH keys
+  - `rm` - Remove an SSH key
 
 Each command group has its own set of subcommands. For example:
 
@@ -116,11 +109,11 @@ Here's a complete workflow to get started:
 
 ```bash
 # Set up your API key
-lazycloud keys add my-key YOUR_API_KEY
-lazycloud keys set-active my-key
+lazycloud auth add my-key YOUR_API_KEY
+lazycloud auth set my-key
 
 # Add your SSH key
-lazycloud ssh keys add my-ssh-key
+lazycloud ssh add my-ssh-key
 
 # Create a new machine (interactive)
 lazycloud machines create my-machine
@@ -140,10 +133,3 @@ lazycloud machines scale my-machine
 # When done, clean up
 lazycloud machines destroy my-machine
 ```
-
-## Support
-
-For support, please contact:
-- Email: support@lazycloud.com
-- Documentation: https://docs.lazycloud.com
-- GitHub Issues: https://github.com/lazycloud/cli/issues
