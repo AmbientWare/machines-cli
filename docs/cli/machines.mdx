@@ -12,20 +12,19 @@ lazycloud machines create <name> [options]
 
 ### Options
 
-- `--public-key` - Path to SSH public key file (if not provided, will prompt for default key path)
-- `--region` - Region to deploy the machine
-- `--cpu-kind` - CPU kind
-- `--cpu` - Number of CPUs
-- `--memory` - Memory in GB
-- `--volume-size` - Volume size in GB
+- `--region` - Region to deploy the machine (default: "lax")
+- `--cpu` - Number of CPUs (default: 1)
+- `--memory` - Memory in GB (default: 2)
+- `--gpu-kind` - GPU kind (default: "None")
+- `--volume-size` - Volume size in GB (default: 10)
 
 ### Example
 
 ```bash
-lazycloud machines create my-machine --cpu 4 --memory 8 --region us-east-1
+lazycloud machines create my-machine --cpu 4 --memory 8 --region lax --gpu-kind None --volume-size 20
 ```
 
-After creating a machine, you'll be prompted to add it to your SSH config for easier access.
+After creating a machine, you'll be prompted to select an SSH key and the machine will be automatically added to your SSH config for easier access.
 
 ## List Machines
 
@@ -55,10 +54,8 @@ lazycloud machines scale <machine-name> [options]
 
 ### Options
 
-- `--cpu-kind` or `-k` - New CPU kind
-- `--cpu` or `-c` - New number of CPUs
-- `--memory` or `-m` - New memory in GB
-- `--region` or `-r` - New region
+- `--cpu` - New number of CPUs
+- `--memory` - New memory in GB
 
 ### Example
 
@@ -76,12 +73,16 @@ lazycloud machines connect <machine-name> [options]
 
 ### Options
 
-- `--ssh-key` - Path to SSH private key file (if not provided, will use default key)
+- `--command` or `-c` - Command to execute on the remote machine
 
 ### Example
 
 ```bash
+# Connect to the machine
 lazycloud machines connect my-machine
+
+# Execute a command on the remote machine
+lazycloud machines connect my-machine --command "ls -la"
 ```
 
 ## Destroy a Machine
@@ -100,7 +101,7 @@ Here's a complete workflow example:
 
 ```bash
 # Create a new machine
-lazycloud machines create my-machine --cpu 4 --memory 8
+lazycloud machines create my-machine --cpu 4 --memory 8 --gpu-kind None
 
 # List all machines
 lazycloud machines ls
@@ -111,13 +112,16 @@ lazycloud machines scale my-machine --cpu 8 --memory 16
 # Connect to the machine
 lazycloud machines connect my-machine
 
+# Execute a command on the remote machine
+lazycloud machines connect my-machine --command "docker ps"
+
 # When done, destroy the machine
 lazycloud machines destroy my-machine
 ```
 
 ## Notes
 
-- When creating a machine, you can specify the SSH public key path or use the default key
+- When creating a machine, you'll be prompted to select an existing SSH key
 - The machine will be automatically added to your SSH config after creation
 - When destroying a machine, it will be automatically removed from your SSH config
 - All commands require an active API key to be set

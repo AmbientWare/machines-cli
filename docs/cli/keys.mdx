@@ -16,7 +16,10 @@ lazycloud keys add <name> <value>
 lazycloud keys add my-key YOUR_API_KEY
 ```
 
-If a key with the same name already exists, you'll be prompted to enter a new name. The command will validate that the new name is unique before proceeding.
+The command will:
+- Validate that the API key is valid before adding it
+- If a key with the same name exists, prompt for confirmation to overwrite
+- If this is the first key added, automatically set it as active
 
 ## List API Keys
 
@@ -56,13 +59,13 @@ lazycloud keys get my-key
 Set which API key should be used for other commands.
 
 ```bash
-lazycloud keys use <name>
+lazycloud keys set-active <name>
 ```
 
 ### Example
 
 ```bash
-lazycloud keys use my-key
+lazycloud keys set-active my-key
 ```
 
 ## Remove API Key
@@ -70,13 +73,21 @@ lazycloud keys use my-key
 Remove an API key by name.
 
 ```bash
-lazycloud keys rm <name>
+lazycloud keys rm <name> [options]
 ```
+
+### Options
+
+- `--force` or `-f` - Force removal without confirmation
 
 ### Example
 
 ```bash
+# Remove with confirmation
 lazycloud keys rm my-key
+
+# Force remove without confirmation
+lazycloud keys rm my-key --force
 ```
 
 ## Examples
@@ -91,7 +102,7 @@ lazycloud keys add my-key YOUR_API_KEY
 lazycloud keys ls
 
 # Set this key as active
-lazycloud keys use my-key
+lazycloud keys set-active my-key
 
 # Verify the active key
 lazycloud keys get
@@ -109,3 +120,4 @@ lazycloud keys rm my-key
 5. Remove unused API keys to keep your configuration clean
 6. The active API key is used by default for all other commands
 7. API key names are case-insensitive for consistency
+8. Always validate your API keys before using them in production

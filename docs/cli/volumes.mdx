@@ -7,7 +7,7 @@ The `volumes` command group allows you to manage storage volumes for your cloud 
 Extend the storage volume of a machine to a new size.
 
 ```bash
-lazycloud machines volume extend <machine-name> <size>
+lazycloud volumes extend <machine-name> <size>
 ```
 
 ### Arguments
@@ -19,7 +19,7 @@ lazycloud machines volume extend <machine-name> <size>
 
 ```bash
 # Extend volume to 100GB
-lazycloud machines volume extend my-machine 100
+lazycloud volumes extend my-machine 100
 ```
 
 ## Examples
@@ -31,7 +31,7 @@ Here's a complete workflow example:
 lazycloud machines create my-machine --volume-size 50
 
 # Later, extend the volume when more storage is needed
-lazycloud machines volume extend my-machine 100
+lazycloud volumes extend my-machine 100
 ```
 
 ## Notes
