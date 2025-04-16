@@ -18,19 +18,7 @@ lazycloud volumes extend <machine-name> <size>
 ### Example
 
 ```bash
-# Extend volume to 100GB
-lazycloud volumes extend my-machine 100
-```
-
-## Examples
-
-Here's a complete workflow example:
-
-```bash
-# Create a machine with initial volume size
-lazycloud machines create my-machine --volume-size 50
-
-# Later, extend the volume when more storage is needed
+# Extend volume on my-machine to 100GB
 lazycloud volumes extend my-machine 100
 ```
 
