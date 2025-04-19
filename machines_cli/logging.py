@@ -13,7 +13,15 @@ from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.text import Text
 
-REMOVABLE_TABLE_NAMES = ["id", "created_at", "updated_at", "user_id", "machine_uuid"]
+REMOVABLE_TABLE_NAMES = [
+    "id",
+    "created_at",
+    "updated_at",
+    "user_id",
+    "machine_uuid",
+    "app_port",
+    "file_system_id",
+]
 
 
 # Define a custom theme for consistent styling
@@ -103,17 +111,19 @@ class Logger:
         options_text_obj.justify = "left"
 
         # Display the prompt and options in a box that expands to terminal width
-        self.console.print(Panel(
-            options_text_obj,
-            title=prompt_text,
-            border_style="cyan",
-            expand=True  # This makes the panel expand to the full terminal width
-        ))
+        self.console.print(
+            Panel(
+                options_text_obj,
+                title=prompt_text,
+                border_style="cyan",
+                expand=True,  # This makes the panel expand to the full terminal width
+            )
+        )
 
         # Get user input with validation
         choice = Prompt.ask(
             "Select an option",
-            default=str(default) if default else None,
+            default=str(default) if default else str_options[0],
             choices=str_options,
             show_choices=False,
         )

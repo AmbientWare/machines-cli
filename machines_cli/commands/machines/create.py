@@ -8,6 +8,7 @@ from machines_cli.ssh_config import ssh_config_manager
 app = typer.Typer(help="Create a new machine")
 console = Console()
 
+
 @app.command()
 def create(
     machine_name: str = typer.Argument(None, help="Name of the machine to create"),
@@ -16,13 +17,15 @@ def create(
     try:
         # make sure the machine name is not already taken
         if api.machines.get_machines(machine_name):
-            logger.error(f"Machine '{machine_name}' already exists. Please choose a different name.")
+            logger.error(
+                f"Machine '{machine_name}' already exists. Please choose a different name."
+            )
             return
 
         ssh_keys = api.ssh_keys.get_ssh_keys()
         if not ssh_keys:
             logger.error(
-                "No SSH keys found. Please create an SSH key first with `lazycloud ssh keys add`"
+                "No SSH keys found. Please create an SSH key first with `lazycloud ssh add`"
             )
             return
 
@@ -35,15 +38,17 @@ def create(
 
         # prompt to get the region
         regions = machine_options.regions
-        region = logger.option("Available regions:", regions, default='lax')
+        region = logger.option("Available regions:", regions, default="lax")
 
         # prompt to get the cpu
         cpu_options = machine_options.options.keys()
-        cpu = logger.option("Available CPU options:", [str(cpu) for cpu in cpu_options], default=1)
+        cpu = logger.option("Available CPU options:", [str(cpu) for cpu in cpu_options])
 
         # prompt to get the memory
         memory_options = machine_options.options[cpu]
-        memory = logger.option("Available RAM options (GB):", [str(memory) for memory in memory_options], default=2)
+        memory = logger.option(
+            "Available RAM options (GB):", [str(memory) for memory in memory_options]
+        )
 
         # have user input the volume size, default to 10
         volume_size = typer.prompt(
@@ -60,7 +65,10 @@ def create(
         # Ask which ssh key the user wants to use
         try:
             key_names = [key["name"] for key in ssh_keys]
-            ssh_key_name = logger.option("Available SSH keys:", key_names, default=key_names[0] if key_names else None)
+            ssh_key_name = logger.option(
+                "Available SSH keys:",
+                key_names,
+            )
 
         except FileNotFoundError as e:
             logger.error(str(e))
@@ -101,7 +109,9 @@ def create(
 
         ssh_config_manager.add_machine(machine_name, alias, port)
         logger.success(f"Added machine {machine_name} to SSH config")
-        logger.success(f"Machine created successfully. You can now connect to it using `lazycloud machines connect {machine_name}`")
+        logger.success(
+            f"Machine created successfully. You can now connect to it using `lazycloud machines connect {machine_name}`"
+        )
 
     except Exception as e:
         logger.error(f"Error creating machine: {e}")
