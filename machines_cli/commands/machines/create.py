@@ -1,5 +1,6 @@
 import typer
 from rich.console import Console
+import click
 
 from machines_cli.api import api
 from machines_cli.logging import logger
@@ -50,12 +51,6 @@ def create(
             "Available RAM options (GB):", [str(memory) for memory in memory_options]
         )
 
-        # have user input the volume size, default to 10
-        volume_size = typer.prompt(
-            "Enter the volume size in GB",
-            default=10,
-        )
-
         # prompt to get the gpu kind
         gpu_kind = typer.prompt(
             "Select the GPU kind",
@@ -78,6 +73,41 @@ def create(
             logger.error(f"Error reading public key file: {e}")
             return
 
+        # have user input the volume size, default to 10
+        file_systems = api.file_systems.list_file_systems()
+        if file_systems:
+            fs_names = [fs["name"] for fs in file_systems] + ["None"]
+            file_system_name = logger.option(
+                "Select a file system or leave blank to create a new one",
+                fs_names,
+                default="None",
+            )
+        else:
+            logger.warning(
+                "No file systems found. you will need to create a file system first."
+            )
+            file_system_name = "None"
+
+        if file_system_name == "None":
+            file_system_name = typer.prompt("Enter the name of the file system")
+            file_system_size = typer.prompt(
+                "Enter the size of the file system in GB. Minimum size is 10GB.",
+                default=10,
+                type=click.IntRange(min=10),
+            )
+            # create a new file system if wants to
+            file_system = api.file_systems.create_file_system(
+                file_system_name, file_system_size, region
+            )
+
+        else:
+            file_system = api.file_systems.get_file_system(file_system_name)
+
+        fs_id = file_system.get("id")
+        if not fs_id:
+            logger.error(f"File system '{file_system_name}' not found")
+            return
+
         # Create machine using API
         try:
             result = api.machines.create_machine(
@@ -86,7 +116,7 @@ def create(
                 region=region,
                 cpu=int(cpu),
                 memory=int(memory),
-                volume_size=int(volume_size),
+                file_system_id=fs_id,
                 gpu_kind=gpu_kind if gpu_kind != "None" else None,
             )
 

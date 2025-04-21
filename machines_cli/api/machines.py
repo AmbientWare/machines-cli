@@ -3,6 +3,8 @@ from machines_cli.logging import logger
 from machines_cli.api.base import BaseAPI
 from pydantic import BaseModel
 from machines_cli.api.utils import mb_to_gb
+
+
 class MachineOptions(BaseModel):
     regions: List[str]
     options: Dict[str, List[int]]
@@ -19,7 +21,9 @@ class MachineAPI(BaseAPI):
     def get_machine_options(self) -> MachineOptions:
         """Get the options for a machine"""
         res = self._get("options")
-        return MachineOptions(regions=res.get("regions", []), options=res.get("options", {}))
+        return MachineOptions(
+            regions=res.get("regions", []), options=res.get("options", {})
+        )
 
     def list_machines(self) -> List[Dict]:
         """List all machines"""
@@ -44,8 +48,8 @@ class MachineAPI(BaseAPI):
                 res = self._get()
 
             for machine in res:
-                    if machine.get("memory"):
-                        machine["memory"] = mb_to_gb(machine["memory"])
+                if machine.get("memory"):
+                    machine["memory"] = mb_to_gb(machine["memory"])
 
             return res
 
@@ -59,16 +63,17 @@ class MachineAPI(BaseAPI):
         self,
         name: str,
         public_key: str,
+        file_system_id: int,
         region: Optional[str] = None,
         cpu: Optional[int] = None,
         memory: Optional[int] = None,
-        volume_size: Optional[int] = None,
         gpu_kind: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Create a new machine and poll for status updates"""
         request_data = {
             "name": name,
             "public_key": public_key,
+            "file_system_id": file_system_id,
         }
 
         # Add optional fields only if they are explicitly provided
@@ -78,8 +83,6 @@ class MachineAPI(BaseAPI):
             request_data["cpu"] = str(cpu)
         if memory is not None:
             request_data["memory"] = str(self._gb_to_mb(memory))
-        if volume_size is not None:
-            request_data["volume_size"] = str(volume_size)
         if gpu_kind is not None:
             request_data["gpu_kind"] = gpu_kind
 
