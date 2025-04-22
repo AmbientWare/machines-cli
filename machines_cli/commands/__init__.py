@@ -1,7 +1,7 @@
 import typer
 
 # Import command modules
-from machines_cli.commands.machines import machines_app
+from machines_cli.commands.machines import machine_app
 from machines_cli.commands.ssh import ssh_app
 from machines_cli.commands.auth import auth_app
 from machines_cli.commands.file_systems import fs_app
@@ -14,7 +14,7 @@ app = typer.Typer(
 )
 
 # Add command modules to the main app
-app.add_typer(machines_app, name="machines")
+app.add_typer(machine_app, name="machine")
 app.add_typer(ssh_app, name="ssh")
 app.add_typer(auth_app, name="auth")
 app.add_typer(fs_app, name="fs")

@@ -10,13 +10,13 @@ from machines_cli.commands.machines.connect import app as connect_app
 from machines_cli.commands.machines.options import app as options_app
 
 # Create the machines app
-machines_app = typer.Typer(help="Machine management commands")
+machine_app = typer.Typer(help="Machine management commands")
 
 # Add command modules to the machines app
-machines_app.add_typer(create_app)
-machines_app.add_typer(scale_app)
-machines_app.add_typer(destroy_app)
-machines_app.add_typer(get_app)
-machines_app.add_typer(list_app)
-machines_app.add_typer(connect_app)
-machines_app.add_typer(options_app)
+machine_app.add_typer(create_app)
+machine_app.add_typer(scale_app)
+machine_app.add_typer(destroy_app)
+machine_app.add_typer(get_app)
+machine_app.add_typer(list_app)
+machine_app.add_typer(connect_app)
+machine_app.add_typer(options_app)
