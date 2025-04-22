@@ -5,9 +5,15 @@ from pydantic import BaseModel
 from machines_cli.api.utils import mb_to_gb
 
 
+class GPUInfo(BaseModel):
+    price: float
+    regions: List[str]
+
+
 class MachineOptions(BaseModel):
     regions: List[str]
-    options: Dict[str, List[int]]
+    compute: Dict[str, List[int]]
+    gpu: Dict[str, GPUInfo]
 
 
 class MachineAPI(BaseAPI):
@@ -22,7 +28,9 @@ class MachineAPI(BaseAPI):
         """Get the options for a machine"""
         res = self._get("options")
         return MachineOptions(
-            regions=res.get("regions", []), options=res.get("options", {})
+            regions=res.get("regions", []),
+            compute=res.get("compute", {}),
+            gpu=res.get("gpu", {}),
         )
 
     def list_machines(self) -> List[Dict]:

@@ -37,31 +37,47 @@ def create(
             )
             return
 
-        # prompt to get the region
-        regions = machine_options.regions
-        region = logger.option("Available regions:", regions, default="lax")
-
-        # prompt to get the cpu
-        cpu_options = machine_options.options.keys()
-        cpu = logger.option("Available CPU options:", [str(cpu) for cpu in cpu_options])
-
-        # prompt to get the memory
-        memory_options = machine_options.options[cpu]
-        memory = logger.option(
-            "Available RAM options (GB):", [str(memory) for memory in memory_options]
+        # prompt to get the gpu kind
+        gpu_kind = logger.option(
+            "Select a GPU to attach to the machine, otherwise leave blank",
+            list(machine_options.gpu.keys()),
+            default="None",
         )
 
-        # prompt to get the gpu kind
-        gpu_kind = typer.prompt(
-            "Select the GPU kind",
-            default="None",
+        # prompt to get the region
+        if gpu_kind != "None":
+            # GPU regions are specific to the GPU kind
+            regions = machine_options.gpu[gpu_kind].regions
+        else:
+            # There are several more supported regions for CPU only machines
+            gpu_kind = None # later methods expect gpu_kind to be None if no GPU is selected
+            regions = machine_options.regions
+
+        region = logger.option(
+            "Select a region to deploy the machine:", regions, default=regions[0]
+        )
+
+        # prompt to get the cpu
+        cpu_options = list(machine_options.compute.keys())
+        cpu = logger.option(
+            "Select how many CPU cores to allocate:",
+            [str(cpu) for cpu in cpu_options],
+            default=cpu_options[0],
+        )
+
+        # prompt to get the memory
+        memory_options = machine_options.compute[cpu]
+        memory = logger.option(
+            "Select how much RAM to allocate (GB):",
+            [str(memory) for memory in memory_options],
+            default=memory_options[0],
         )
 
         # Ask which ssh key the user wants to use
         try:
             key_names = [key["name"] for key in ssh_keys]
             ssh_key_name = logger.option(
-                "Available SSH keys:",
+                "Select the SSH key to use for machine authentication:",
                 key_names,
             )
 
@@ -75,10 +91,10 @@ def create(
 
         # have user input the volume size, default to 10
         file_systems = api.file_systems.list_file_systems()
+        # only keep file systems in the selected region
+        file_systems = [fs for fs in file_systems if fs["region"] == region]
         if file_systems:
-            fs_names = [fs["name"] for fs in file_systems if fs["region"] == region] + [
-                "Create New"
-            ]
+            fs_names = [fs["name"] for fs in file_systems]
             file_system_name = logger.option(
                 "Select a file system or leave blank to create a new one (only shows file systems in the selected region)",
                 fs_names,
@@ -99,7 +115,7 @@ def create(
             )
             # create a new file system if wants to
             file_system = api.file_systems.create_file_system(
-                file_system_name, file_system_size, region
+                file_system_name, file_system_size, region, gpu_kind
             )
 
         else:

@@ -24,9 +24,24 @@ def create(name: str = typer.Argument(..., help="Name of the file system to crea
             )
             return
 
+        # check if the user plans to use a GPU
+        using_gpu = typer.confirm(
+            "Do you plan to attach a GPU to the machine using this file system?"
+        )
+        if using_gpu:
+            # get the specific gpu type from the user
+            gpu_kind = logger.option(
+                "Which GPU kind do you plan to use?",
+                list(machine_options.gpu.keys()),
+                default=list(machine_options.gpu.keys())[0],
+            )
+            regions = machine_options.gpu[gpu_kind].regions
+        else:
+            gpu_kind = None
+            regions = machine_options.regions
+
         # prompt to get the region
-        regions = machine_options.regions
-        region = logger.option("Available regions:", regions, default="lax")
+        region = logger.option("Select a region:", regions, default=regions[0])
 
         # prompt to get the size with validation
         size = typer.prompt(
@@ -36,7 +51,7 @@ def create(name: str = typer.Argument(..., help="Name of the file system to crea
         )
 
         # Create file system
-        api.file_systems.create_file_system(name, size, region)
+        api.file_systems.create_file_system(name, size, region, gpu_kind)
         logger.success(f"File system '{name}' created successfully")
 
     except Exception as e:

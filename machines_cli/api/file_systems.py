@@ -1,4 +1,4 @@
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from machines_cli.logging import logger
 from machines_cli.api.base import BaseAPI
 from pydantic import BaseModel
@@ -41,6 +41,7 @@ class FileSystemAPI(BaseAPI):
         name: str,
         size: int,
         region: str,
+        gpu_kind: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Create a new file system"""
         request_data = {
@@ -48,6 +49,9 @@ class FileSystemAPI(BaseAPI):
             "size": size,
             "region": region.lower(),
         }
+
+        if gpu_kind:
+            request_data["gpu_kind"] = gpu_kind
 
         def _create():
             return self._post(json=request_data)
