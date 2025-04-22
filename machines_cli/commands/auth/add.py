@@ -11,15 +11,14 @@ def add(
     name: str = typer.Option(
         ..., prompt="Name for the API key", help="Name for the API key"
     ),
-    value: str = typer.Option(
-        ..., prompt="API key value", hide_input=True, help="API key value"
-    ),
 ):
     """Add a new API key"""
     # Check if key name already exists
     if name in config.list_api_keys():
         if not typer.confirm(f"API key '{name}' already exists. Overwrite?"):
             return
+
+    value = typer.prompt("Enter the API key value")
 
     ## First we need to check if the key is valid
     # save the old key to restore it later

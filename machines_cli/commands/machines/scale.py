@@ -9,14 +9,14 @@ app = typer.Typer(help="Scale a machine's resources")
 
 @app.command()
 def scale(
-    machine_name: str = typer.Argument(..., help="Name of the machine to scale"),
+    name: str = typer.Argument(..., help="Name of the machine to scale"),
 ):
     """Scale a machine's resources"""
     try:
         # Get current machine details
-        current_machine = api.machines.get_machines(machine_name)
+        current_machine = api.machines.get_machines(name)
         if not current_machine:
-            logger.error(f"Machine {machine_name} not found")
+            logger.error(f"Machine {name} not found")
             return
 
         # Get available machine options
@@ -39,7 +39,11 @@ def scale(
         )
 
         # Get memory options for the selected CPU
-        memory_options = [opt for opt in machine_options.options[str(cpu)] if int(opt) != int(current_memory)]
+        memory_options = [
+            opt
+            for opt in machine_options.options[str(cpu)]
+            if int(opt) != int(current_memory)
+        ]
         memory = logger.option(
             "Available RAM options (Current: " + str(mb_to_gb(current_memory)) + "GB):",
             memory_options,
@@ -48,21 +52,23 @@ def scale(
 
         # Check if at least one resource is being changed
         if cpu == current_cpu and memory == current_memory:
-            logger.warning("CPU and RAM values are the same as current values. Please specify a different value.")
+            logger.warning(
+                "CPU and RAM values are the same as current values. Please specify a different value."
+            )
             return
 
         result = api.machines.scale_machine(
-            machine_name=machine_name,
+            machine_name=name,
             cpu=int(cpu),
             memory=int(memory),
         )
 
         if result:
-            scaled_machine = api.machines.get_machines(machine_name)
+            scaled_machine = api.machines.get_machines(name)
             if scaled_machine:
                 logger.table(scaled_machine)
                 logger.success(
-                    f"Successfully scaled machine {machine_name} to {cpu} CPU and {memory} GB RAM"
+                    f"Successfully scaled machine {name} to {cpu} CPU and {memory} GB RAM"
                 )
 
     except Exception as e:

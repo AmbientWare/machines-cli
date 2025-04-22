@@ -1,8 +1,7 @@
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Any
 from machines_cli.logging import logger
 from machines_cli.api.base import BaseAPI
 from pydantic import BaseModel
-from machines_cli.api.utils import mb_to_gb
 
 
 class MachineOptions(BaseModel):
@@ -73,6 +72,14 @@ class FileSystemAPI(BaseAPI):
             return self._put(json={"id": id, "size": size})
 
         return self._run_with_spinner("Extending volume...", _extend)
+
+    def duplicate_file_system(self, id: int, name: str) -> None:
+        """Duplicate a file system"""
+
+        def _duplicate():
+            return self._post(path="duplicate", json={"id": id, "name": name})
+
+        return self._run_with_spinner("Duplicating file system...", _duplicate)
 
 
 file_systems_api = FileSystemAPI()

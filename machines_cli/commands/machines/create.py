@@ -12,14 +12,14 @@ console = Console()
 
 @app.command()
 def create(
-    machine_name: str = typer.Argument(None, help="Name of the machine to create"),
+    name: str = typer.Argument(None, help="Name of the machine to create"),
 ):
     """Create a new machine"""
     try:
         # make sure the machine name is not already taken
-        if api.machines.get_machines(machine_name):
+        if api.machines.get_machines(name):
             logger.error(
-                f"Machine '{machine_name}' already exists. Please choose a different name."
+                f"Machine '{name}' already exists. Please choose a different name."
             )
             return
 
@@ -111,7 +111,7 @@ def create(
         # Create machine using API
         try:
             result = api.machines.create_machine(
-                name=machine_name,
+                name=name,
                 public_key=ssh_key_name,
                 region=region,
                 cpu=int(cpu),
@@ -121,7 +121,7 @@ def create(
             )
 
             if result:
-                created_machine = api.machines.get_machines(machine_name)
+                created_machine = api.machines.get_machines(name)
                 if created_machine:
                     logger.table(created_machine)
 
@@ -130,17 +130,17 @@ def create(
             return
 
         # add to ssh config
-        alias, port = api.machines.get_machine_alias(machine_name)
+        alias, port = api.machines.get_machine_alias(name)
         if alias is None or port is None:
             logger.error(
                 "Error getting machine alias. Please try again by running `machines connect add <machine-name>`."
             )
             return
 
-        ssh_config_manager.add_machine(machine_name, alias, port)
-        logger.success(f"Added machine {machine_name} to SSH config")
+        ssh_config_manager.add_machine(name, alias, port)
+        logger.success(f"Added machine {name} to SSH config")
         logger.success(
-            f"Machine created successfully. You can now connect to it using `lazycloud machines connect {machine_name}`"
+            f"Machine created successfully. You can now connect to it using `lazycloud machines connect {name}`"
         )
 
     except Exception as e:

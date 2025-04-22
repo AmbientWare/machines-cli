@@ -9,16 +9,14 @@ console = Console()
 
 @app.command()
 def get(
-    machine_name: str = typer.Argument(
-        ..., help="Name of the machine to get details for"
-    ),
+    name: str = typer.Argument(..., help="Name of the machine to get details for"),
 ):
     """Get detailed information about a specific machine"""
     try:
         # Get machine details from API
-        machines = api.machines.get_machines(machine_name)
+        machines = api.machines.get_machines(name)
         if not machines:
-            logger.error(f"Machine '{machine_name}' not found")
+            logger.error(f"Machine '{name}' not found")
             raise typer.Exit(1)
 
         # Display the table
