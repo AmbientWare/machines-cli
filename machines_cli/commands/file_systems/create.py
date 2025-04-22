@@ -3,7 +3,7 @@ from machines_cli.api import api
 from machines_cli.logging import logger
 import click
 
-app = typer.Typer(help="Extend machine volumes")
+app = typer.Typer(help="Extend machine file systems")
 
 
 @app.command()

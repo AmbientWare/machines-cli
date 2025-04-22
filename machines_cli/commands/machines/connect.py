@@ -17,14 +17,6 @@ def connect(
 ):
     """Connect to a machine via SSH"""
     try:
-        # Get machine details from API
-        machines = api.machines.get_machines(name)
-        if not machines:
-            logger.error(f"Machine '{name}' not found")
-            raise typer.Exit(1)
-
-        machine = machines[0]  # Get the first (and should be only) machine
-
         # Get machine connection details
         alias, port = api.machines.get_machine_alias(name)
         if not alias or not port:

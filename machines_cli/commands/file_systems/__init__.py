@@ -7,10 +7,10 @@ from machines_cli.commands.file_systems.destroy import app as destroy_app
 from machines_cli.commands.file_systems.list import app as list_app
 from machines_cli.commands.file_systems.duplicate import app as duplicate_app
 
-# Create the volumes app
+# Create the file systems app
 fs_app = typer.Typer(help="File system management commands")
 
-# Add command modules to the volumes app
+# Add command modules to the file systems app
 fs_app.add_typer(extend_app)
 fs_app.add_typer(create_app)
 fs_app.add_typer(destroy_app)

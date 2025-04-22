@@ -41,7 +41,7 @@ class SSHConfigManager:
     Port {port}
     StrictHostKeyChecking no
     ForwardAgent yes
-    ConnectTimeout 30
+    ConnectTimeout 45
 """
                 )
         except IOError as e:

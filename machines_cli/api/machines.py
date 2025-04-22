@@ -3,6 +3,7 @@ from machines_cli.logging import logger
 from machines_cli.api.base import BaseAPI
 from pydantic import BaseModel
 from machines_cli.api.utils import mb_to_gb
+import typer
 
 
 class GPUInfo(BaseModel):
@@ -23,6 +24,23 @@ class MachineAPI(BaseAPI):
     def _gb_to_mb(self, gb: float) -> int:
         """Convert GB to MB"""
         return int(gb * 1024)
+
+    def _get_machine_id(self, name: str, raise_error: bool = True) -> int | None:
+        """Get the machine ID for a machine"""
+        machines = self._get(params={"name": name})
+        if not machines:
+            if raise_error:
+                logger.error(f"Machine {name} not found")
+                raise typer.Exit(1)
+            else:
+                return None
+
+        machine_id = machines[0].get("id")
+        if not machine_id:
+            logger.error(f"Machine {name} has no ID")
+            raise typer.Exit(1)
+
+        return machine_id
 
     def get_machine_options(self) -> MachineOptions:
         """Get the options for a machine"""
@@ -51,7 +69,11 @@ class MachineAPI(BaseAPI):
 
         def _get():
             if machine_name:
-                res = self._get(params={"machine_name": machine_name})
+                machine_id = self._get_machine_id(machine_name, raise_error=False)
+                if machine_id:
+                    res = self._get(params={"id": machine_id})
+                else:
+                    res = []
             else:
                 res = self._get()
 
@@ -126,26 +148,18 @@ class MachineAPI(BaseAPI):
             request_data["gpu_kind"] = gpu_kind
 
         def _scale():
-            return self._put(machine_name, json=request_data)
+            machine_id = self._get_machine_id(machine_name)
+            return self._put(str(machine_id), json=request_data)
 
         return self._run_with_spinner("Scaling machine...", _scale)
-
-    def extend_volume(self, machine_name: str, volume_size: int) -> None:
-        """Extend the volume of a machine"""
-
-        def _extend():
-            return self._post(
-                f"{machine_name}/volumes", params={"volume_size": volume_size}
-            )
-
-        return self._run_with_spinner("Extending volume...", _extend)
 
     def delete_machine(self, machine_name: str) -> Dict[str, Any] | None:
         """Delete a machine"""
         try:
 
             def _destroy():
-                return self._delete(params={"machine_name": machine_name})
+                machine_id = self._get_machine_id(machine_name)
+                return self._delete(params={"id": machine_id})
 
             response = self._run_with_spinner(
                 f"Destroying machine {machine_name}...", _destroy
@@ -158,8 +172,24 @@ class MachineAPI(BaseAPI):
 
     def get_machine_alias(self, machine_name: str) -> Tuple[str | None, int | None]:
         """Get the alias for a machine"""
-        res = self._get(f"alias/{machine_name}")
+        machine_id = self._get_machine_id(machine_name)
+        res = self._get(f"{machine_id}/alias")
         return res.get("alias"), res.get("port")
+
+    def restart(self, machine_name: str) -> Dict[str, Any]:
+        """Restart a machine"""
+        machine_id = self._get_machine_id(machine_name)
+        return self._post(f"{machine_id}/restart")
+
+    def auto_stop(self, machine_name: str) -> Dict[str, Any]:
+        """Auto stop a machine"""
+        machine_id = self._get_machine_id(machine_name)
+        return self._post(f"{machine_id}/autopause")
+
+    def keep_alive(self, machine_name: str) -> Dict[str, Any]:
+        """Keep a machine alive"""
+        machine_id = self._get_machine_id(machine_name)
+        return self._post(f"{machine_id}/keep-alive")
 
 
 machines_api = MachineAPI()

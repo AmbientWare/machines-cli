@@ -24,17 +24,7 @@ def destroy(
         if not confirm:
             return
 
-        fs = api.file_systems.get_file_system(name)
-        if not fs:
-            logger.error(f"File system {name} not found")
-            raise typer.Exit(1)
-
-        fs_id = fs.get("id")
-        if not fs_id:
-            logger.error(f"File system {name} has no ID")
-            raise typer.Exit(1)
-
-        result = api.file_systems.delete_file_system(fs_id)
+        result = api.file_systems.delete_file_system(name)
         if result:
             logger.success(f"Successfully destroyed file system {name}")
         else:

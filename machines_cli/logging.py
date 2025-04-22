@@ -116,7 +116,8 @@ class Logger:
                 options_text_obj,
                 title=prompt_text,
                 border_style="cyan",
-                expand=True,  # This makes the panel expand to the full terminal width
+                expand=True,
+                title_align="left",
             )
         )
 
@@ -161,7 +162,6 @@ class Logger:
                 if key not in REMOVABLE_TABLE_NAMES:
                     if key not in columns:
                         columns[key] = 0
-                    # Calculate max length for this column
                     value_str = str(value)
                     columns[key] = max(columns[key], len(value_str))
 

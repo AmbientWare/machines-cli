@@ -89,8 +89,8 @@ def create(
             logger.error(f"Error reading public key file: {e}")
             return
 
-        # have user input the volume size, default to 10
-        file_systems = api.file_systems.list_file_systems()
+        # have user input the file system size, default to 10
+        file_systems = api.file_systems.get_available_file_systems()
         # only keep file systems in the selected region
         file_systems = [fs for fs in file_systems if fs["region"] == region]
         if file_systems:
@@ -151,14 +151,14 @@ def create(
         alias, port = api.machines.get_machine_alias(name)
         if alias is None or port is None:
             logger.error(
-                "Error getting machine alias. Please try again by running `machines connect add <machine-name>`."
+                "Error getting machine alias. Please try again by running `machine connect add <machine-name>`."
             )
             return
 
         ssh_config_manager.add_machine(name, alias, port)
         logger.success(f"Added machine {name} to SSH config")
         logger.success(
-            f"Machine created successfully. You can now connect to it using `lazycloud machines connect {name}`"
+            f"Machine created successfully. You can now connect to it using `lazycloud machine connect {name}`"
         )
 
     except Exception as e:

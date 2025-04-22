@@ -2,6 +2,7 @@ from typing import Dict, List, Any, Optional
 from machines_cli.logging import logger
 from machines_cli.api.base import BaseAPI
 from pydantic import BaseModel
+import typer
 
 
 class MachineOptions(BaseModel):
@@ -12,6 +13,15 @@ class MachineOptions(BaseModel):
 class FileSystemAPI(BaseAPI):
     def __init__(self):
         super().__init__("file-systems")
+
+    def _get_file_system_id(self, name: str) -> int:
+        """Get the file system ID for a file system"""
+        res = self._get(params={"name": name})
+        if not res:
+            logger.error(f"File system {name} not found")
+            raise typer.Exit(1)
+
+        return res[0].get("id")
 
     def list_file_systems(self) -> List[Dict]:
         """List all file systems"""
@@ -24,11 +34,17 @@ class FileSystemAPI(BaseAPI):
             logger.error(f"Error listing file systems: {e}")
             return []
 
+    def get_available_file_systems(self) -> List[Dict]:
+        """Get available file systems"""
+        res = self._get(params={"available": True})
+        return res
+
     def get_file_system(self, file_system_name: str) -> Dict[str, Any]:
         """Get file system by name"""
 
         def _get():
-            res = self._get(params={"name": file_system_name})
+            file_system_id = self._get_file_system_id(file_system_name)
+            res = self._get(params={"id": file_system_id})
             if res:
                 return res[0]
             else:
@@ -60,28 +76,42 @@ class FileSystemAPI(BaseAPI):
 
     def delete_file_system(
         self,
-        id: int,
+        file_system_name: str,
     ) -> Dict[str, Any]:
         """Delete a file system"""
 
         def _delete():
-            return self._delete(json={"id": id})
+            file_system_id = self._get_file_system_id(file_system_name)
+            return self._delete(json={"id": file_system_id})
 
         return self._run_with_spinner("Deleting file system...", _delete)
 
-    def extend_volume(self, id: int, size: int) -> None:
-        """Extend the volume of a file system"""
+    def extend_file_system(
+        self,
+        file_system_name: str,
+        size: int,
+    ) -> None:
+        """Extend a file system"""
 
         def _extend():
-            return self._put(json={"id": id, "size": size})
+            file_system_id = self._get_file_system_id(file_system_name)
+            return self._put(json={"id": file_system_id, "size": size})
 
-        return self._run_with_spinner("Extending volume...", _extend)
+        return self._run_with_spinner("Extending file system...", _extend)
 
-    def duplicate_file_system(self, id: int, name: str) -> None:
+    def duplicate_file_system(
+        self,
+        file_system_name: str,
+        duplicate_name: str,
+    ) -> None:
         """Duplicate a file system"""
 
         def _duplicate():
-            return self._post(path="duplicate", json={"id": id, "name": name})
+            file_system_id = self._get_file_system_id(file_system_name)
+            return self._post(
+                path="duplicate",
+                json={"id": file_system_id, "duplicate_name": duplicate_name},
+            )
 
         return self._run_with_spinner("Duplicating file system...", _duplicate)
 
