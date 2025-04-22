@@ -76,19 +76,21 @@ def create(
         # have user input the volume size, default to 10
         file_systems = api.file_systems.list_file_systems()
         if file_systems:
-            fs_names = [fs["name"] for fs in file_systems] + ["None"]
+            fs_names = [fs["name"] for fs in file_systems if fs["region"] == region] + [
+                "Create New"
+            ]
             file_system_name = logger.option(
-                "Select a file system or leave blank to create a new one",
+                "Select a file system or leave blank to create a new one (only shows file systems in the selected region)",
                 fs_names,
-                default="None",
+                default="Create New",
             )
         else:
             logger.warning(
                 "No file systems found. you will need to create a file system first."
             )
-            file_system_name = "None"
+            file_system_name = "Create New"
 
-        if file_system_name == "None":
+        if file_system_name == "Create New":
             file_system_name = typer.prompt("Enter the name of the file system")
             file_system_size = typer.prompt(
                 "Enter the size of the file system in GB. Minimum size is 10GB.",
