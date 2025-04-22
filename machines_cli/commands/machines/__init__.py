@@ -8,6 +8,9 @@ from machines_cli.commands.machines.get import app as get_app
 from machines_cli.commands.machines.list import app as list_app
 from machines_cli.commands.machines.connect import app as connect_app
 from machines_cli.commands.machines.options import app as options_app
+from machines_cli.commands.machines.auto_stop import app as auto_stop_app
+from machines_cli.commands.machines.keep_alive import app as keep_alive_app
+from machines_cli.commands.machines.restart import app as restart_app
 
 # Create the machines app
 machine_app = typer.Typer(help="Machine management commands")
@@ -20,3 +23,6 @@ machine_app.add_typer(get_app)
 machine_app.add_typer(list_app)
 machine_app.add_typer(connect_app)
 machine_app.add_typer(options_app)
+machine_app.add_typer(auto_stop_app)
+machine_app.add_typer(keep_alive_app)
+machine_app.add_typer(restart_app)

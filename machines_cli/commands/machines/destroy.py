@@ -12,18 +12,9 @@ def destroy(
     name: str = typer.Argument(..., help="Name of the machine to delete"),
 ):
     """Delete a machine"""
-    try:
-        # Use Typer's built-in rich text formatting
-        confirm = typer.confirm(
-            typer.style(
-                f"Are you sure you want to delete machine {name}?",
-                fg=typer.colors.RED,
-                bold=True,
-            )
-        )
-        if not confirm:
-            return
+    logger.confirm(f"Are you sure you want to delete machine {name}?")
 
+    try:
         result = api.machines.delete_machine(name)
         if result:
             logger.success(f"Successfully destroyed machine {name}")

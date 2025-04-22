@@ -10,8 +10,9 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.live import Live
 from rich.spinner import Spinner as RichSpinner
 from rich.panel import Panel
-from rich.prompt import Prompt
+from rich.prompt import Prompt, Confirm
 from rich.text import Text
+import typer
 
 REMOVABLE_TABLE_NAMES = [
     "id",
@@ -92,6 +93,33 @@ class Logger:
         """Log a debug message (only shown if verbose is True)"""
         if self.verbose:
             self._log(LogLevel.DEBUG, message, bold)
+
+    def confirm(
+        self,
+        message: str,
+        color: str = typer.colors.YELLOW,
+        bold: bool = False,
+        return_result: bool = False,
+    ):
+        """Log a confirm message with optional color and bold styling
+
+        Args:
+            message: The message to display
+            color: The color to use (from typer.colors)
+            bold: Whether to make the text bold
+        """
+        confirm = typer.confirm(
+            typer.style(
+                message,
+                fg=color,
+                bold=bold,
+            )
+        )
+        if not confirm and not return_result:
+            self.info("Operation cancelled")
+            raise typer.Exit(1)
+
+        return confirm
 
     def option(
         self,

@@ -178,18 +178,25 @@ class MachineAPI(BaseAPI):
 
     def restart(self, machine_name: str) -> Dict[str, Any]:
         """Restart a machine"""
-        machine_id = self._get_machine_id(machine_name)
-        return self._post(f"{machine_id}/restart")
 
-    def auto_stop(self, machine_name: str) -> Dict[str, Any]:
+        def _restart():
+            machine_id = self._get_machine_id(machine_name)
+            return self._post(f"{machine_id}/restart", json={})
+
+        return self._run_with_spinner("Restarting machine...", _restart)
+
+    def auto_stop(self, machine_name: str, enabled: bool) -> Dict[str, Any]:
         """Auto stop a machine"""
-        machine_id = self._get_machine_id(machine_name)
-        return self._post(f"{machine_id}/autopause")
 
-    def keep_alive(self, machine_name: str) -> Dict[str, Any]:
-        """Keep a machine alive"""
-        machine_id = self._get_machine_id(machine_name)
-        return self._post(f"{machine_id}/keep-alive")
+        def _auto_stop():
+            machine_id = self._get_machine_id(machine_name)
+            data = {"enabled": enabled}
+            return self._post(f"{machine_id}/auto-stop", json=data)
+
+        return self._run_with_spinner(
+            "Enabling auto stop..." if enabled else "Making sure machine is kept alive...",
+            _auto_stop,
+        )
 
 
 machines_api = MachineAPI()

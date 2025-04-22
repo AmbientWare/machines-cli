@@ -12,18 +12,9 @@ def destroy(
     name: str = typer.Argument(..., help="Name of the file system to delete"),
 ):
     """Delete a file system"""
-    try:
-        # Use Typer's built-in rich text formatting
-        confirm = typer.confirm(
-            typer.style(
-                f"Are you sure you want to delete file system {name}?",
-                fg=typer.colors.RED,
-                bold=True,
-            )
-        )
-        if not confirm:
-            return
+    logger.confirm(f"Are you sure you want to delete file system {name}?")
 
+    try:
         result = api.file_systems.delete_file_system(name)
         if result:
             logger.success(f"Successfully destroyed file system {name}")

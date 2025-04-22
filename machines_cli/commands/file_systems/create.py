@@ -25,8 +25,9 @@ def create(name: str = typer.Argument(..., help="Name of the file system to crea
             return
 
         # check if the user plans to use a GPU
-        using_gpu = typer.confirm(
-            "Do you plan to attach a GPU to the machine using this file system?"
+        using_gpu = logger.confirm(
+            "Do you plan to attach a GPU to the machine using this file system?",
+            return_result=True,
         )
         if using_gpu:
             # get the specific gpu type from the user

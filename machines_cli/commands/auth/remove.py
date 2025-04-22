@@ -16,9 +16,7 @@ def rm(
             logger.error(f"API key '{name}' not found")
             raise typer.Exit(1)
 
-        # Confirm removal
-        if not typer.confirm(f"Are you sure you want to remove API key '{name}'?"):
-            return
+        logger.confirm(f"Are you sure you want to remove API key '{name}'?")
 
         # Remove the key
         config.remove_api_key(name)

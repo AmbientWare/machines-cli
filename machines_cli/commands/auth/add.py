@@ -15,7 +15,7 @@ def add(
     """Add a new API key"""
     # Check if key name already exists
     if name in config.list_api_keys():
-        if not typer.confirm(f"API key '{name}' already exists. Overwrite?"):
+        if not logger.confirm(f"API key '{name}' already exists. Overwrite?"):
             return
 
     value = typer.prompt("Enter the API key value")

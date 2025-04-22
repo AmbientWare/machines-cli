@@ -3,6 +3,7 @@ import httpx
 from machines_cli.config import config
 from machines_cli.api.utils import Spinner, StatusSpinner
 
+
 class BaseAPI:
     def __init__(self, url_path: str):
         self._base_url = f"{config.api_base_url}/{config.api_version}/{url_path}"
@@ -16,7 +17,9 @@ class BaseAPI:
             if api_key:
                 headers["Authorization"] = f"Bearer {api_key}"
             else:
-                raise Exception("No API key set. Please set an API key with `lazycloud keys add`")
+                raise Exception(
+                    "No API key set. Please set an API key with `lazycloud keys add`"
+                )
 
         return httpx.Client(timeout=self.timeout, headers=headers)
 
@@ -34,8 +37,30 @@ class BaseAPI:
             response.raise_for_status()
             return response.json()
 
+        except httpx.HTTPStatusError as e:
+            # Try to get error message from response JSON
+            try:
+                error_data = e.response.json()
+                if isinstance(error_data, dict):
+                    if "detail" in error_data:
+                        error_message = error_data["detail"]
+                    else:
+                        error_message = (
+                            error_data.get("message")
+                            or error_data.get("error")
+                            or str(error_data)
+                        )
+                else:
+                    error_message = str(error_data)
+            except Exception:
+                # If can't parse JSON, use status code and reason
+                error_message = (
+                    f"HTTP {e.response.status_code}: {e.response.reason_phrase}"
+                )
+            raise Exception(error_message) from e
+
         except Exception as e:
-            raise e
+            raise Exception(str(e)) from e
 
     def _get(
         self,
@@ -81,7 +106,7 @@ class BaseAPI:
         self,
         message: str,
         func: Callable,
-        status_checker: Optional[Callable[[], str]] = None
+        status_checker: Optional[Callable[[], str]] = None,
     ) -> Any:
         """Run a function with a spinner in a separate thread. If status_checker is provided,
         it should be a function that returns the current status as a string.
@@ -94,4 +119,3 @@ class BaseAPI:
             # Use regular Spinner if no status checker is provided
             with Spinner(message):
                 return func()
-
