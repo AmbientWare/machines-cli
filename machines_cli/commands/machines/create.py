@@ -12,7 +12,7 @@ console = Console()
 
 @app.command()
 def create(
-    name: str = typer.Argument(None, help="Name of the machine to create"),
+    name: str = typer.Argument(..., help="Name of the machine to create"),
 ):
     """Create a new machine"""
     try:

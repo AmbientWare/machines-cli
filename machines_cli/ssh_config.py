@@ -40,6 +40,7 @@ class SSHConfigManager:
     User ubuntu
     Port {port}
     StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
     ForwardAgent yes
     ConnectTimeout 45
 """
